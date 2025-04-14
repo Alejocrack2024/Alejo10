@@ -4,12 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contactos</title>
-    <h1 class="titulos">segundo titulo</h1>
 </head>
+<link rel="stylesheet" href="CSS/style.css">
 <body>
     <h1>Contactos</h1>
-    <p>ingrese sus contactos:</p>
-    <div><h4>Ingrese tu gmail:<textarea name="" id=""></textarea></h4></div>
-    <div><h4>Ingrese tu telefono:<textarea name="" id=""></textarea></h4></div>
+    <h2>Ingrese sus contactos:</h2>
+
+    <div>
+        <label for="gmail"><strong>Ingrese Gmail:</strong></label><br>
+        <textarea id="gmail" rows="2" cols="30" placeholder="ejemplo@gmail.com"></textarea>
+    </div>
+
+    <div>
+        <label for="telefono"><strong>Ingrese Teléfono:</strong></label><br>
+        <textarea id="telefono" rows="2" cols="30" placeholder="Ej: 3511234567"></textarea>
+    </div>
+
+    <br>
+    <button onclick="guardarDatos()">Guardar Contacto</button>
+    <button onclick="borrarTodos()">Borrar Todos</button>
+    <br><br>
+
+    <h2>Lista de contactos guardados:</h2>
+    <ul id="lista-contactos"></ul>
+
+    <a href="index.html" target="_blank">Vuelve a la página principal</a>
+
+    <script>
+        // Mostrar los contactos al cargar la página
+        window.onload = function () {
+            mostrarContactos();
+        };
+
+        function guardarDatos() {
+            const gmail = document.getElementById("gmail").value.trim();
+            const telefono = document.getElementById("telefono").value.trim();
+
+            if (gmail === "" || telefono === "") {
+                alert("Por favor, complete ambos campos.");
+                return;
+            }
+
+            let contactos = JSON.parse(localStorage.getItem("contactos")) || [];
+
+            contactos.push({ gmail, telefono });
+
+            localStorage.setItem("contactos", JSON.stringify(contactos));
+
+            document.getElementById("gmail").value = "";
+            document.getElementById("telefono").value = "";
+
+            mostrarContactos();
+        }
+
+        function mostrarContactos() {
+            const lista = document.getElementById("lista-contactos");
+            lista.innerHTML = "";
+
+            let contactos = JSON.parse(localStorage.getItem("contactos")) || [];
+
+            contactos.forEach((contacto, index) => {
+                const li = document.createElement("li");
+                li.textContent = `Gmail: ${contacto.gmail} | Teléfono: ${contacto.telefono} `;
+
+                const botonBorrar = document.createElement("button");
+                botonBorrar.textContent = "Borrar";
+                botonBorrar.onclick = function () {
+                    borrarContacto(index);
+                };
+
+                li.appendChild(botonBorrar);
+                lista.appendChild(li);
+            });
+        }
+
+        function borrarContacto(index) {
+            let contactos = JSON.parse(localStorage.getItem("contactos")) || [];
+            contactos.splice(index, 1);
+            localStorage.setItem("contactos", JSON.stringify(contactos));
+            mostrarContactos();
+        }
+
+        function borrarTodos() {
+            if (confirm("¿Estás seguro de que querés borrar todos los contactos?")) {
+                localStorage.removeItem("contactos");
+                mostrarContactos();
+            }
+        }
+    </script>
 </body>
 </html>
